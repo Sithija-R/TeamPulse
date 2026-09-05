@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/teampulse
+    username: postgres
+    password: 0768847208
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    
+
+jwt:
+  secret: jbkrfhbrjgrejgkrehgkeggheighkwejgkhgewglkewljgkejgopwgpehpge454egegkeg658g6e6g5eg
+  expiration: 3600000
