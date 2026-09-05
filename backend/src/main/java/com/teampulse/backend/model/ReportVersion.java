@@ -1,19 +1,18 @@
-package model;
+package com.teampulse.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import model.enums.ReviewAction;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "report_reviews")
+@Table(name = "report_versions", uniqueConstraints = @UniqueConstraint(columnNames = { "report_id", "version_number" }))
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReportReview {
+public class ReportVersion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,16 +22,11 @@ public class ReportReview {
     @JoinColumn(name = "report_id")
     private WeeklyReport report;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "manager_id")
-    private User manager;
-
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ReviewAction action;
+    private Integer versionNumber;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String comment;
+    @Column(nullable = false, columnDefinition = "jsonb")
+    private String contentSnapshot;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

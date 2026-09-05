@@ -1,4 +1,4 @@
-package model;
+package com.teampulse.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;

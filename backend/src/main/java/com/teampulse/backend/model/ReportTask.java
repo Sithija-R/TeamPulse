@@ -1,9 +1,10 @@
-package model;
+package com.teampulse.backend.model;
+
+import com.teampulse.backend.model.enums.Priority;
+import com.teampulse.backend.model.enums.TaskStatus;
 
 import jakarta.persistence.*;
 import lombok.*;
-import model.enums.Priority;
-import model.enums.TaskStatus;
 
 @Entity
 @Table(name = "report_tasks")

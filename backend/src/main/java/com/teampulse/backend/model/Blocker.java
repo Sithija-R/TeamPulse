@@ -1,17 +1,16 @@
-package model;
+package com.teampulse.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import model.enums.TaskType;
 
 @Entity
-@Table(name = "time_entries")
+@Table(name = "blockers")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TimeEntry {
+public class Blocker {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +20,12 @@ public class TimeEntry {
     @JoinColumn(name = "report_id")
     private WeeklyReport report;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TaskType taskType;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String description;
 
     @Column(nullable = false)
-    private Double hours;
+    private boolean keyIssue;
+
+    @Column(nullable = false)
+    private boolean resolved;
 }

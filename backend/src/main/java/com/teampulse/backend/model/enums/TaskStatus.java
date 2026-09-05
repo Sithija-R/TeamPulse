@@ -1,4 +1,4 @@
-package model.enums;
+package com.teampulse.backend.model.enums;
 
 public enum TaskStatus {
     NOT_STARTED,

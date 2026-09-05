@@ -1,16 +1,16 @@
-package model;
+package com.teampulse.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "blockers")
+@Table(name = "achievements")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Blocker {
+public class Achievement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +24,5 @@ public class Blocker {
     private String description;
 
     @Column(nullable = false)
-    private boolean keyIssue;
-
-    @Column(nullable = false)
-    private boolean resolved;
+    private boolean keyAchievement;
 }

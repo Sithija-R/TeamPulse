@@ -1,13 +1,14 @@
-package model;
+package com.teampulse.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import model.enums.ReportStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.teampulse.backend.model.enums.ReportStatus;
 
 @Entity
 @Table(name = "weekly_reports", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "week_start_date" }))

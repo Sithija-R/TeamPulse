@@ -1,7 +1,7 @@
-package model;
+package com.teampulse.backend.model;
 
-import javax.management.relation.Role;
 
+import com.teampulse.backend.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
