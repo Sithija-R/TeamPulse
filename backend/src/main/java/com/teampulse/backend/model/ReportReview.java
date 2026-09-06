@@ -2,9 +2,7 @@ package com.teampulse.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
-
 import com.teampulse.backend.model.enums.ReviewAction;
 
 @Entity
@@ -27,6 +25,10 @@ public class ReportReview {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "manager_id")
     private User manager;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "version_id")
+    private ReportVersion version;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

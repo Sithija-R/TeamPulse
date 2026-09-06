@@ -66,4 +66,8 @@ public class WeeklyReport {
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<TimeEntry> timeEntries = new ArrayList<>();
+
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ReportVersion> versions = new ArrayList<>();
 }

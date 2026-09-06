@@ -64,4 +64,30 @@ public class GlobalExceptionHandler {
                     .status(HttpStatus.NOT_FOUND)
                     .body(error);
         }
+
+        @ExceptionHandler(OperationNotAllowedException.class)
+        public ResponseEntity<ErrorResponse> handleOperationNotAllowed(OperationNotAllowedException ex) {
+
+            ErrorResponse error = new ErrorResponse(
+                    HttpStatus.CONFLICT.value(),
+                    ex.getMessage()
+            );
+
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(error);
+        }
+
+        @ExceptionHandler(OperationFailedException.class)
+        public ResponseEntity<ErrorResponse> handleOperationFailed(OperationFailedException ex) {
+
+            ErrorResponse error = new ErrorResponse(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    ex.getMessage()
+            );
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(error);
+        }
 }
