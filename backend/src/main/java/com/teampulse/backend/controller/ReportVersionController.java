@@ -17,7 +17,6 @@ public class ReportVersionController {
     private final ReportVersionService reportVersionService;
 
     @GetMapping("/{id}/versions")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<List<ReportVersionResponse>> getReportVersions(@PathVariable Long id) {
         return ResponseEntity.ok(reportVersionService.getReportVersions(id));
     }

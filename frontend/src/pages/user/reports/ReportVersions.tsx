@@ -2,8 +2,9 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useReports } from '../../../hooks/useReports';
 import { PageHeader } from '../../../components/common/PageHeader';
-import { VersionHistory } from '../../../components/reports/VersionHistory';
+
 import { ErrorState } from '../../../components/common/ErrorState';
+import { VersionHistory } from '@/components/reports/VersionHistory';
 
 export const ReportVersions: React.FC = () => {
   const { id } = useParams<{ id: string }>();

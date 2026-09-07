@@ -15,4 +15,4 @@ spring:
 
 jwt:
   secret: jbkrfhbrjgrejgkrehgkeggheighkwejgkhgewglkewljgkejgopwgpehpge454egegkeg658g6e6g5eg
-  expiration: 3600000
+  expiration: 604800000

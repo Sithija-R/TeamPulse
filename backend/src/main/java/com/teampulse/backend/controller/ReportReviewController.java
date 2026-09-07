@@ -27,7 +27,6 @@ public class ReportReviewController {
     }
 
     @GetMapping("/{id}/reviews")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<List<ReportReviewResponse>> getReportReviews(@PathVariable Long id) {
         return ResponseEntity.ok(reportReviewService.getReportReviews(id));
     }

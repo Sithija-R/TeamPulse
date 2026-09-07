@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export const MyReports = () => {
+export function MyReports() {
   const { reports, isLoading, error, fetchMyReports } = useReportStore();
   const [projectFilter, setProjectFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -27,34 +27,19 @@ export const MyReports = () => {
     reports.forEach((report) => {
       uniqueProjects.set(report.projectId, report.projectName);
     });
-    return Array.from(uniqueProjects.entries()).sort((a, b) =>
-      a[1].localeCompare(b[1])
-    );
+    return Array.from(uniqueProjects.entries()).sort((a, b) => a[1].localeCompare(b[1]));
   }, [reports]);
 
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
-      if (
-        projectFilter !== "ALL" &&
-        report.projectId !== Number(projectFilter)
-      ) {
-        return false;
-      }
-
-      if (statusFilter !== "ALL" && report.status !== statusFilter) {
-        return false;
-      }
+      if (projectFilter !== "ALL" && report.projectId !== Number(projectFilter)) return false;
+      if (statusFilter !== "ALL" && report.status !== statusFilter) return false;
 
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
         const matchProject = report.projectName.toLowerCase().includes(query);
-        const matchTasks = report.tasks.some((task) =>
-          task.taskName.toLowerCase().includes(query)
-        );
-
-        if (!matchProject && !matchTasks) {
-          return false;
-        }
+        const matchTasks = report.tasks.some((task) => task.taskName.toLowerCase().includes(query));
+        if (!matchProject && !matchTasks) return false;
       }
 
       return true;
@@ -117,9 +102,7 @@ export const MyReports = () => {
                 <SelectItem value="ALL">All Statuses</SelectItem>
                 <SelectItem value="DRAFT">Draft</SelectItem>
                 <SelectItem value="SUBMITTED">Submitted</SelectItem>
-                <SelectItem value="NEEDS_CORRECTION">
-                  Needs Correction
-                </SelectItem>
+                <SelectItem value="NEEDS_CORRECTION">Needs Correction</SelectItem>
                 <SelectItem value="APPROVED">Approved</SelectItem>
               </SelectContent>
             </Select>
@@ -129,9 +112,7 @@ export const MyReports = () => {
 
       {error && (
         <Card className="border-red-200 bg-red-50">
-          <CardContent className="p-4 text-xs font-medium text-red-700">
-            {error}
-          </CardContent>
+          <CardContent className="p-4 text-xs font-medium text-red-700">{error}</CardContent>
         </Card>
       )}
 
@@ -153,50 +134,30 @@ export const MyReports = () => {
             <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#F7F8F7]">
               <Search className="h-4 w-4 text-[#6B726D]" />
             </div>
-            <p className="mt-3 text-sm font-semibold text-[#171A18]">
-              No reports found
-            </p>
-            <p className="mt-1 text-xs text-[#6B726D]">
-              No reports match your selected criteria.
-            </p>
+            <p className="mt-3 text-sm font-semibold text-[#171A18]">No reports found</p>
+            <p className="mt-1 text-xs text-[#6B726D]">No reports match your selected criteria.</p>
           </CardContent>
         ) : (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="border-[#E5E7E5] bg-[#F7F8F7] hover:bg-[#F7F8F7]">
-                  <TableHead className="px-4 text-xs font-semibold text-[#6B726D]">
-                    Week Start – End
-                  </TableHead>
-                  <TableHead className="px-4 text-xs font-semibold text-[#6B726D]">
-                    Project Name
-                  </TableHead>
-                  <TableHead className="px-3 text-xs font-semibold text-[#6B726D]">
-                    Status
-                  </TableHead>
-                  <TableHead className="px-3 text-xs font-semibold text-[#6B726D]">
-                    Tasks
-                  </TableHead>
-                  <TableHead className="px-3 text-xs font-semibold text-[#6B726D]">
-                    Submitted Date
-                  </TableHead>
-                  <TableHead className="px-4 text-right text-xs font-semibold text-[#6B726D]">
-                    Actions
-                  </TableHead>
+                  <TableHead className="px-4 text-xs font-semibold text-[#6B726D]">Week Start – End</TableHead>
+                  <TableHead className="px-4 text-xs font-semibold text-[#6B726D]">Project Name</TableHead>
+                  <TableHead className="px-3 text-xs font-semibold text-[#6B726D]">Status</TableHead>
+                  <TableHead className="px-3 text-xs font-semibold text-[#6B726D]">Tasks</TableHead>
+                  <TableHead className="px-3 text-xs font-semibold text-[#6B726D]">Submitted Date</TableHead>
+                  <TableHead className="px-4 text-right text-xs font-semibold text-[#6B726D]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
                 {filteredReports.map((report) => (
-                  <TableRow
-                    key={report.id}
-                    className="border-[#E5E7E5] transition-colors hover:bg-[#F7F8F7]/50"
-                  >
+                  <TableRow key={report.id} className="border-[#E5E7E5] transition-colors hover:bg-[#F7F8F7]/50">
                     <TableCell className="whitespace-nowrap px-4 py-3.5 text-xs font-bold text-[#171A18]">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="h-3.5 w-3.5 text-[#6B726D]" />
-                        {formatDate(report.weekStartDate)} –{" "}
-                        {formatDate(report.weekEndDate)}
+                        {formatDate(report.weekStartDate)} – {formatDate(report.weekEndDate)}
                       </div>
                     </TableCell>
 
@@ -205,11 +166,7 @@ export const MyReports = () => {
                     </TableCell>
 
                     <TableCell className="px-3 py-3.5">
-                      <StatusBadge
-                        status={report.status}
-                        type="report"
-                        size="sm"
-                      />
+                      <StatusBadge status={report.status} type="report" size="sm" />
                     </TableCell>
 
                     <TableCell className="px-3 py-3.5 text-xs font-semibold text-[#171A18]">
@@ -217,9 +174,7 @@ export const MyReports = () => {
                     </TableCell>
 
                     <TableCell className="px-3 py-3.5 text-xs text-[#6B726D]">
-                      {report.submittedAt
-                        ? formatDate(report.submittedAt)
-                        : "Not submitted"}
+                      {report.submittedAt ? formatDate(report.submittedAt) : "Not submitted"}
                     </TableCell>
 
                     <TableCell className="px-4 py-3.5 text-right">
@@ -234,14 +189,11 @@ export const MyReports = () => {
                           <span className="hidden sm:inline">View</span>
                         </Button>
 
-                        {(report.status === "DRAFT" ||
-                          report.status === "NEEDS_CORRECTION") && (
+                        {(report.status === "DRAFT" || report.status === "NEEDS_CORRECTION") && (
                           <Button
                             variant="outline"
                             size="sm"
-                            render={
-                              <Link to={`/user/reports/${report.id}/edit`} />
-                            }
+                            render={<Link to={`/user/reports/${report.id}/edit`} />}
                             className="h-8 rounded-md border-amber-200 bg-amber-50 px-2.5 text-xs font-semibold text-amber-700 hover:bg-amber-100"
                           >
                             <Edit className="h-3.5 w-3.5" />
@@ -259,4 +211,4 @@ export const MyReports = () => {
       </Card>
     </div>
   );
-};
+}

@@ -22,11 +22,6 @@ export const CreateReport = () => {
       <PageHeader
         title="Create Weekly Status Report"
         description="Fill out your tasks, achievements, blockers, and time breakdown for the week."
-        breadcrumbs={[
-          { label: "Dashboard", href: "/user/dashboard" },
-          { label: "My Reports", href: "/user/reports" },
-          { label: "Create Report" },
-        ]}
       />
       <ReportForm onSubmit={handleSubmit} isEdit={false} />
     </div>

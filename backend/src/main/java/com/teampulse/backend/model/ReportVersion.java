@@ -2,16 +2,18 @@ package com.teampulse.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "report_versions", uniqueConstraints = @UniqueConstraint(columnNames = { "report_id", "version_number" }))
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@Table(name = "report_versions")
 public class ReportVersion {
 
     @Id
@@ -25,6 +27,7 @@ public class ReportVersion {
     @Column(nullable = false)
     private Integer versionNumber;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false, columnDefinition = "jsonb")
     private String contentSnapshot;
 

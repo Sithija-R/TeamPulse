@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Award, CheckCircle2, Clock, Mail, Shield } from "lucide-react";
+import { Award, CheckCircle2, Clock, FileText, Mail, Shield } from "lucide-react";
 import { PageHeader } from "../../components/common/PageHeader";
 import { StatusBadge } from "../../components/common/StatusBadge";
 import { formatDate } from "../../lib/utils";
@@ -9,14 +9,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const Profile = () => {
+export function Profile() {
+
+  const roleLabels: Record<string, string> = {
+    TEAM_MEMBER: "Team Member",
+    MANAGER: "Manager",
+    ADMIN: "Administrator",
+  };
+
   const { authUser } = useAuthStore();
-  const {
-    reports,
-    isLoading,
-    error,
-    fetchMyReports,
-  } = useReportStore();
+  const { reports, isLoading, error, fetchMyReports } = useReportStore();
 
   useEffect(() => {
     fetchMyReports();
@@ -81,27 +83,23 @@ export const Profile = () => {
               <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#171A18] text-xl font-bold text-white">
                 {initials}
               </div>
-
               <div>
                 <h2 className="text-xl font-bold text-[#171A18]">
                   {authUser?.name ?? "User"}
                 </h2>
-
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#6B726D]">
                   <Mail className="h-3.5 w-3.5" />
                   <span>{authUser?.email ?? "No email available"}</span>
                   <span>•</span>
                   <Shield className="h-3.5 w-3.5 text-[#8DF688]" />
                   <span className="font-semibold text-[#171A18]">
-                    {authUser?.role ?? "USER"}
+                  {authUser?.role ? roleLabels[authUser.role] ?? authUser.role : "User"}
                   </span>
                 </div>
               </div>
             </div>
 
-            <Badge className="w-fit rounded-full border border-[#8DF688] bg-[#8DF688]/20 px-3.5 py-1 text-xs font-bold text-[#171A18] hover:bg-[#8DF688]/20">
-              95% Compliance Rate
-            </Badge>
+  
           </div>
 
           <div className="grid grid-cols-1 gap-4 text-xs sm:grid-cols-3">
@@ -161,7 +159,10 @@ export const Profile = () => {
           {isLoading && reports.length === 0 ? (
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, index) => (
-                <Card key={index} className="border-[#E5E7E5] shadow-none">
+                <Card
+                  key={index}
+                  className="border-[#E5E7E5] shadow-none"
+                >
                   <CardContent className="flex items-center justify-between p-4">
                     <div className="space-y-2">
                       <Skeleton className="h-4 w-40" />
@@ -174,7 +175,9 @@ export const Profile = () => {
             </div>
           ) : reports.length === 0 ? (
             <div className="rounded-xl border border-dashed border-[#D9DDD9] bg-[#F7F8F7] p-8 text-center">
-              <FileTextIcon />
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-white">
+                <FileText className="h-4 w-4 text-[#6B726D]" />
+              </div>
               <p className="mt-3 text-sm font-semibold text-[#171A18]">
                 No reporting history
               </p>
@@ -194,7 +197,6 @@ export const Profile = () => {
                       <div className="text-sm font-bold text-[#171A18]">
                         {report.projectName}
                       </div>
-
                       <div className="mt-0.5 text-xs text-[#6B726D]">
                         Week: {formatDate(report.weekStartDate)} –{" "}
                         {formatDate(report.weekEndDate)}
@@ -207,7 +209,6 @@ export const Profile = () => {
                         type="report"
                         size="sm"
                       />
-
                       <span className="hidden text-xs font-medium text-[#6B726D] sm:inline">
                         {report.tasks.length} tasks
                       </span>
@@ -221,19 +222,4 @@ export const Profile = () => {
       </Card>
     </div>
   );
-};
-
-const FileTextIcon = () => (
-  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-white">
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className="h-4 w-4 text-[#6B726D]"
-    >
-      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-      <path d="M14 2v6h6M8 13h8M8 17h5" />
-    </svg>
-  </div>
-);
+}
