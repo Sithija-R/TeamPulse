@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/teampulse
     username: postgres
-    password: 0768847208
+    password: ********
 
   jpa:
     hibernate:
