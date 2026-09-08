@@ -1,5 +1,5 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
+
 import {
   LayoutDashboard,
   FileText,
@@ -10,27 +10,62 @@ import {
   UserCheck,
   Zap,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+
 import { useAuthStore } from "../../store/authStore";
 
 interface SidebarProps {
   onCloseMobile?: () => void;
 }
 
-export const Sidebar = ({ onCloseMobile } : SidebarProps) => {
+function getCurrentWeekLabel(): string {
+  const today = new Date();
+  const day = today.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + diff);
+
+  return monday.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export function Sidebar({ onCloseMobile }: SidebarProps) {
   const location = useLocation();
   const authUser = useAuthStore((state) => state.authUser);
 
   const role = authUser?.role;
+  const userName = authUser?.name ?? "User";
+
   const isManagerOrAdmin = role === "MANAGER" || role === "ADMIN";
 
   const memberNav = [
-    { label: "Dashboard", href: "/user/dashboard", icon: LayoutDashboard },
-    { label: "My Reports", href: "/user/reports", icon: FileText },
-    { label: "Create Report", href: "/user/reports/create", icon: PlusCircle },
-    { label: "Profile", href: "/user/profile", icon: UserIcon },
+    {
+      label: "Dashboard",
+      href: "/user/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      label: "My Reports",
+      href: "/user/reports",
+      icon: FileText,
+    },
+    {
+      label: "Create Report",
+      href: "/user/reports/create",
+      icon: PlusCircle,
+    },
+    {
+      label: "Profile",
+      href: "/user/profile",
+      icon: UserIcon,
+    },
   ];
 
   const managerNav = [
@@ -39,19 +74,42 @@ export const Sidebar = ({ onCloseMobile } : SidebarProps) => {
       href: "/management/dashboard",
       icon: LayoutDashboard,
     },
-    { label: "All Reports", href: "/management/reports", icon: FileText },
-    { label: "Team Members", href: "/management/team", icon: Users },
-    { label: "Projects", href: "/management/projects", icon: Briefcase },
-    { label: "Users", href: "/management/users", icon: UserCheck },
+    {
+      label: "All Reports",
+      href: "/management/reports",
+      icon: FileText,
+    },
+    {
+      label: "Team Members",
+      href: "/management/team",
+      icon: Users,
+    },
+    {
+      label: "Projects",
+      href: "/management/projects",
+      icon: Briefcase,
+    },
+    {
+      label: "Users",
+      href: "/management/users",
+      icon: UserCheck,
+    },
   ];
 
+  const roleLabels: Record<"TEAM_MEMBER" | "MANAGER" | "ADMIN", string> = {
+    TEAM_MEMBER: "Team Member",
+    MANAGER: "Manager",
+    ADMIN: "Administrator",
+  };
+
   const navItems = isManagerOrAdmin ? managerNav : memberNav;
+  
   const dashboardPath = isManagerOrAdmin
     ? "/management/dashboard"
     : "/user/dashboard";
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r bg-white">
+    <aside className="flex h-full w-64 flex-col bg-white shadow-[4px_0_12px_rgba(0,0,0,0.08)]">
       {/* Brand */}
       <div className="flex h-16 items-center px-6">
         <Link
@@ -68,21 +126,24 @@ export const Sidebar = ({ onCloseMobile } : SidebarProps) => {
 
       <Separator />
 
-      {/* Workspace */}
+      {/* Current Workspace */}
       <div className="px-4 py-3">
-        <div className="rounded-lg border bg-[#F7F8F7] p-3">
-          <div className="flex items-center justify-between text-xs text-[#6B726D]">
-            <span>Current Workspace</span>
+        <div className="rounded-lg p-3 shadow-md">
+          <div className="mt-2 flex items-center justify-between">
+            <p className="text-xs font-semibold text-[#171A18]">{userName}</p>
             <Badge
               variant="secondary"
               className="bg-[#8DF688]/30 px-2 py-0.5 text-[10px] font-semibold text-[#171A18] hover:bg-[#8DF688]/30"
             >
-              {role ?? "USER"}
+              {role ? roleLabels[role] : "User"}
             </Badge>
           </div>
-          <p className="mt-1.5 text-xs font-medium text-[#171A18]">
-            Replace CURRENT_WEEK
-          </p>
+          <div className="mt-2 flex  flex-col">
+            <p className="text-[10px] text-[#9AA19C]">Current Week</p>
+            <p className="mt-0.5 text-xs font-medium text-[#171A18]">
+              Week of {getCurrentWeekLabel()}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -94,6 +155,7 @@ export const Sidebar = ({ onCloseMobile } : SidebarProps) => {
 
         {navItems.map((item) => {
           const Icon = item.icon;
+
           const isActive =
             location.pathname === item.href ||
             (item.href !== "/user/reports" &&
@@ -126,6 +188,7 @@ export const Sidebar = ({ onCloseMobile } : SidebarProps) => {
       {!isManagerOrAdmin && (
         <>
           <Separator />
+
           <div className="p-4">
             <Button
               render={
@@ -141,4 +204,4 @@ export const Sidebar = ({ onCloseMobile } : SidebarProps) => {
       )}
     </aside>
   );
-};
+}

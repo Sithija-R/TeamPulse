@@ -3,6 +3,10 @@ export interface MemberStatus {
   memberName: string;
   status: string;
   reportCount: number;
+  projectName: string | null;
+  totalTasks: number;
+  completedTasks: number;
+  openBlockers: number;
 }
 
 export interface RecentActivity {
@@ -17,7 +21,6 @@ export interface DashboardResponse {
   totalReports: number;
   submittedThisWeek: number;
   complianceRate: number;
-  draftCount: number;
   submittedCount: number;
   needsCorrectionCount: number;
   approvedCount: number;

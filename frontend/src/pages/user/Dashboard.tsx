@@ -33,6 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { StatusBadge } from "@/components/common/StatusBadge";
 
 const getCurrentWeek = () => {
   const today = new Date();
@@ -120,6 +121,7 @@ const getActionForStatus = (status: string, id: number) => {
 };
 
 export default function UserDashboard() {
+
   const { authUser } = useAuthStore();
 
   const {
@@ -339,8 +341,8 @@ export default function UserDashboard() {
                   : currentWeekReport.status === "NEEDS_CORRECTION"
                   ? "border-[#f6d988]"
                   : currentWeekReport.status === "SUBMITTED"
-                  ? "border-[#f68888]"
-                  : "border-[#E5E7E5]"
+                  ? "border-[#88caf6]"
+                  : "border-[#f68888]"
                 : "border-[#E5E7E5]"
             }`}
           >
@@ -355,20 +357,8 @@ export default function UserDashboard() {
 
               <div className="mt-4">
                 {currentWeekReport ? (
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${
-                      currentWeekReport.status === "APPROVED"
-                        ? "border-[#8DF688] bg-[#8DF688]/20 text-[#171A18]"
-                        : currentWeekReport.status === "NEEDS_CORRECTION"
-                        ? "border-[#f6d988] bg-[#f6d988]/20 text-[#171A18]"
-                        : currentWeekReport.status === "SUBMITTED"
-                        ? "border-[#f68888] bg-[#f68888]/20 text-[#171A18]"
-                        : "border-[#E5E7E5] bg-[#F7F8F7] text-[#6B726D]"
-                    }`}
-                  >
-                    {getStatusLabel(currentWeekReport.status)}
-                  </Badge>
+                   <StatusBadge status={currentWeekReport.status} type="report" size="sm" />
+                 
                 ) : (
                   <Badge
                     variant="outline"
@@ -453,13 +443,9 @@ export default function UserDashboard() {
                   Status
                 </p>
 
-                <div className="mt-2">
-                  <Badge
-                    variant="outline"
-                    className={getStatusClassName(currentWeekReport.status)}
-                  >
-                    {getStatusLabel(currentWeekReport.status)}
-                  </Badge>
+                <div className="mt-2 ">
+                <StatusBadge status={currentWeekReport.status} type="report" size="sm" />
+                  
                 </div>
               </div>
 
@@ -591,12 +577,8 @@ export default function UserDashboard() {
                         </TableCell>
 
                         <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={getStatusClassName(report.status)}
-                          >
-                            {getStatusLabel(report.status)}
-                          </Badge>
+                        <StatusBadge status={report.status} type="report" size="sm" />
+
                         </TableCell>
 
                         <TableCell className="text-right text-sm text-[#6B726D]">

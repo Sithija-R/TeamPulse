@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +51,6 @@ public class DashboardService {
 
         long totalMembers = members.size();
 
-        long draftCount = reports.stream()
-                .filter(report -> report.getStatus() == ReportStatus.DRAFT)
-                .count();
 
         long submittedCount = reports.stream()
                 .filter(report -> report.getStatus() == ReportStatus.SUBMITTED)
@@ -98,7 +96,6 @@ public class DashboardService {
                 reports.size(),
                 submittedThisWeek,
                 Math.round(complianceRate * 100.0) / 100.0,
-                draftCount,
                 submittedCount,
                 needsCorrectionCount,
                 approvedCount,
@@ -113,31 +110,54 @@ public class DashboardService {
 
     private List<MemberStatusResponse> getStatusByMember(List<User> members, List<WeeklyReport> reports) {
         List<MemberStatusResponse> result = new ArrayList<>();
-
+    
         for (User member : members) {
             List<WeeklyReport> memberReports = reports.stream()
                     .filter(report -> report.getUser().getId().equals(member.getId()))
+                    .sorted(Comparator.comparing(WeeklyReport::getWeekStartDate, Comparator.reverseOrder()))
                     .toList();
-
+    
             if (memberReports.isEmpty()) {
                 result.add(new MemberStatusResponse(
-                        member.getId(),
-                        member.getName(),
-                        "NOT_STARTED",
-                        0
+                        member.getId(), member.getName(), "NOT_STARTED", 0,
+                        null, 0, 0, 0
                 ));
             } else {
                 WeeklyReport latestReport = memberReports.get(0);
-
+    
+                int totalTasks = latestReport.getTasks() != null
+                        ? latestReport.getTasks().size()
+                        : 0;
+    
+                int completedTasks = latestReport.getTasks() != null
+                        ? (int) latestReport.getTasks().stream()
+                                .filter(task -> task.getStatus().name().equals("COMPLETED"))
+                                .count()
+                        : 0;
+    
+                int openBlockers = latestReport.getBlockers() != null
+                        ? (int) latestReport.getBlockers().stream()
+                                .filter(blocker -> !blocker.isResolved())
+                                .count()
+                        : 0;
+    
+                String projectName = latestReport.getProject() != null
+                        ? latestReport.getProject().getName()
+                        : null;
+    
                 result.add(new MemberStatusResponse(
                         member.getId(),
                         member.getName(),
                         latestReport.getStatus().name(),
-                        memberReports.size()
+                        memberReports.size(),
+                        projectName,
+                        totalTasks,
+                        completedTasks,
+                        openBlockers
                 ));
             }
         }
-
+    
         return result;
     }
 

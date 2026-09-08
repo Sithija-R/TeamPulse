@@ -24,6 +24,11 @@ export const getMyReport = async (id: number): Promise<WeeklyReport> => {
   return response.data;
 };
 
+export const getReportById = async (id: number): Promise<WeeklyReport> => {
+  const response = await api.get<WeeklyReport>(`/reports/admin/${id}`);
+  return response.data;
+}
+
 export const updateReport = async (id: number, data: WeeklyReportRequest): Promise<WeeklyReport> => {
   const response = await api.put<WeeklyReport>(`/reports/${id}`, data);
   return response.data;

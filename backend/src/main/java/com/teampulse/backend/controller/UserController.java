@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.teampulse.backend.dto.ChangeRoleRequest;
 import com.teampulse.backend.dto.UserResponse;
-import com.teampulse.backend.model.enums.Role;
 import com.teampulse.backend.service.UserService;
 
 import java.util.List;
@@ -35,8 +35,8 @@ public class UserController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public UserResponse changeUserRole(
             @PathVariable Long id,
-            @RequestParam Role role) {
-
-        return userService.changeUserRole(id, role);
+            @RequestBody ChangeRoleRequest request) {
+              
+        return userService.changeUserRole(id, request.role());
     }
 }

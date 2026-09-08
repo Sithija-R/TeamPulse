@@ -51,6 +51,7 @@ export function ReportSummary({ report }: ReportSummaryProps) {
     0
   );
 
+
   return (
     <div className="space-y-6">
       <Card className="border-[#E5E7E5] bg-white shadow-sm">
@@ -61,7 +62,7 @@ export function ReportSummary({ report }: ReportSummaryProps) {
                 <CardTitle className="text-xl font-bold text-[#171A18]">
                   {report.projectName}
                 </CardTitle>
-                <StatusBadge status={report.status} type="report" size="lg" />
+                <StatusBadge status={report.status} type="report" size="md" />
               </div>
               <p className="mt-1 text-xs text-[#6B726D]">
                 Weekly Report &bull; {formatDate(report.weekStartDate)} &ndash;{" "}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Edit, History, FileText, MessageSquare } from "lucide-react";
+
 import { PageHeader } from "../../../components/common/PageHeader";
 import { ReportSummary } from "../../../components/reports/ReportSummary";
 import { ReviewHistory } from "../../../components/reports/ReviewHistory";
@@ -9,15 +10,14 @@ import { CorrectionFeedback } from "../../../components/reports/CorrectionFeedba
 import { ErrorState } from "../../../components/common/ErrorState";
 import { useReportStore } from "../../../store/reportStore";
 import { useReviewStore } from "../../../store/reviewStore";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function ReportDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<
-    "details" | "reviews" | "versions"
-  >("details");
+  const [activeTab, setActiveTab] = useState<"details" | "reviews" | "versions">("details");
   const reportId = Number(id);
 
   const {
@@ -68,14 +68,13 @@ export function ReportDetail() {
         description={`${report.projectName} • Week of ${report.weekStartDate}`}
         breadcrumbs={[{ label: `Report ${report.id}` }]}
         action={
-          (report.status === "DRAFT" ||
-            report.status === "NEEDS_CORRECTION") && (
+          (report.status === "DRAFT" || report.status === "NEEDS_CORRECTION") && (
             <Button
               render={<Link to={`/user/reports/${report.id}/edit`} />}
-              className={`rounded-xl px-4 text-xs font-bold shadow-xs text-[#171A18] ${
+              className={`rounded-xl px-4 text-xs font-bold text-[#171A18] shadow-xs ${
                 report.status === "DRAFT"
-                  ? "bg-[#8DF688]  hover:bg-[#7ae875]"
-                  : "bg-amber-500  hover:bg-amber-600"
+                  ? "bg-[#8DF688] hover:bg-[#7ae875]"
+                  : "bg-amber-500 hover:bg-amber-600"
               }`}
             >
               <Edit className="h-4 w-4" />

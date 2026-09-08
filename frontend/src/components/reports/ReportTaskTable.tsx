@@ -1,12 +1,15 @@
-import { ExternalLink, Trash2 } from "lucide-react";
+import { ExternalLink, Pencil, Trash2 } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
 import type { ReportTask, Priority, TaskStatus } from "../../types/report";
 
 interface ReportTaskTableProps {
   tasks: ReportTask[];
   isEditable?: boolean;
   onRemoveTask?: (id: number) => void;
+  onEditTask?: (task: ReportTask) => void;
 }
 
 const priorityStyles: Record<Priority, string> = {
@@ -41,6 +44,7 @@ export function ReportTaskTable({
   tasks,
   isEditable = false,
   onRemoveTask,
+  onEditTask,
 }: ReportTaskTableProps) {
   if (tasks.length === 0) {
     return (
@@ -139,16 +143,30 @@ export function ReportTaskTable({
                 </td>
 
                 {isEditable && (
-                  <td className="px-3 py-3 text-right">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onRemoveTask?.(task.id)}
-                      className="h-7 w-7 rounded text-[#6B726D] hover:bg-rose-50 hover:text-rose-600"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <td className="px-3 py-3">
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onEditTask?.(task)}
+                        className="h-7 w-7 rounded text-[#6B726D] hover:bg-blue-50 hover:text-blue-600"
+                        aria-label={`Edit ${task.taskName}`}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onRemoveTask(task.id)}
+                        className="h-7 w-7 rounded text-[#6B726D] hover:bg-rose-50 hover:text-rose-600"
+                        aria-label={`Delete ${task.taskName}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </td>
                 )}
               </tr>
@@ -188,15 +206,29 @@ export function ReportTaskTable({
               </div>
 
               {isEditable && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onRemoveTask?.(task.id)}
-                  className="ml-2 h-7 w-7 shrink-0 rounded text-[#6B726D] hover:bg-rose-50 hover:text-rose-600"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="ml-2 flex shrink-0 gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEditTask?.(task)}
+                    className="h-7 w-7 rounded text-[#6B726D] hover:bg-blue-50 hover:text-blue-600"
+                    aria-label={`Edit ${task.taskName}`}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRemoveTask(task.id)}
+                    className="h-7 w-7 rounded text-[#6B726D] hover:bg-rose-50 hover:text-rose-600"
+                    aria-label={`Delete ${task.taskName}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               )}
             </div>
 
@@ -225,6 +257,7 @@ export function ReportTaskTable({
             {task.deliverable && (
               <div className="text-xs text-[#6B726D]">
                 <span>Deliverable: </span>
+
                 {task.deliverable.startsWith("http") ? (
                   <a
                     href={task.deliverable}

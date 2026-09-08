@@ -15,12 +15,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { ReviewRequest } from "../../../types/review";
+import { toast } from "@/components/ui/toast";
 
 export const ReviewReport = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { authUser } = useAuthStore();
-  const { reports, fetchAllReports, isLoading: reportsLoading } = useReportStore();
+  const {
+    reports,
+    fetchAllReports,
+    isLoading: reportsLoading,
+  } = useReportStore();
   const {
     reviews,
     versions,
@@ -59,16 +64,34 @@ export const ReviewReport = () => {
       action,
       comment:
         comment.trim() ||
-        (action === "APPROVED"
-          ? "Approved by manager."
-          : "Changes requested."),
+        (action === "APPROVED" ? "Approved by manager." : "Changes requested."),
     };
 
     try {
       await reviewReport(reportId, request);
+
+      toast.add({
+        title:
+          request.action === "APPROVED"
+            ? "Report Approved"
+            : "Changes Requested",
+        description:
+          request.action === "APPROVED"
+            ? "The report has been approved successfully."
+            : "The report has been returned to the team member for corrections.",
+        type: "success",
+      });
+
       navigate("/management/reports");
-    } catch {
-      // Error is handled by the review store.
+    } catch (error) {
+      toast.add({
+        title: "Review Failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to review the report.",
+        type: "error",
+      });
     }
   };
 
@@ -95,15 +118,14 @@ export const ReviewReport = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Review Report • ${report.userName}`}
-        description={`${report.projectName} • Week starting ${report.weekStartDate}`}
+        title={`Review Report`}
+        description={`${report.projectName} • ${report.userName} • Week of ${report.weekStartDate}`}
         breadcrumbs={[
           { label: "All Reports", href: "/management/reports" },
           {
-            label: `Report #${report.id}`,
+            label: `Report ${report.id}`,
             href: `/management/reports/${report.id}`,
           },
-          { label: "Review" },
         ]}
         action={
           <Button

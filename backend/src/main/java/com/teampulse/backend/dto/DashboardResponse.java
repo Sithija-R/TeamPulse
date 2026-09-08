@@ -7,7 +7,6 @@ public record DashboardResponse(
         long totalReports,
         long submittedThisWeek,
         double complianceRate,
-        long draftCount,
         long submittedCount,
         long needsCorrectionCount,
         long approvedCount,

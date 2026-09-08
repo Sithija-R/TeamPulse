@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { ArrowRight, CheckCircle2, Eye, History, X } from "lucide-react";
+import { ArrowRight, CheckCircle2, Eye, History } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+
 import { formatDateTime } from "../../lib/utils";
 import { ReportSummary } from "./ReportSummary";
 import type { ReportVersion } from "../../types/review";
@@ -20,10 +27,63 @@ interface VersionHistoryProps {
   versions: ReportVersion[];
 }
 
+type SnapshotReport = Omit<WeeklyReport, "status">;
+
+function normalizeDateTime(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (!Array.isArray(value) || value.length < 6) {
+    return "";
+  }
+
+  const [
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    second,
+    nanoseconds = 0,
+  ] = value.map(Number);
+
+  const fraction = Math.round(nanoseconds / 1000)
+    .toString()
+    .padStart(6, "0");
+
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(
+    2,
+    "0",
+  )}-${String(day).padStart(2, "0")}T${String(hour).padStart(
+    2,
+    "0",
+  )}:${String(minute).padStart(2, "0")}:${String(second).padStart(
+    2,
+    "0",
+  )}.${fraction}`;
+}
+
+function normalizeSnapshotDates(report: SnapshotReport): SnapshotReport {
+  return {
+    ...report,
+    weekStartDate:
+      normalizeDateTime(report.weekStartDate) || report.weekStartDate,
+    weekEndDate:
+      normalizeDateTime(report.weekEndDate) || report.weekEndDate,
+    submittedAt: report.submittedAt
+      ? normalizeDateTime(report.submittedAt)
+      : null,
+    approvedAt: report.approvedAt
+      ? normalizeDateTime(report.approvedAt)
+      : null,
+  };
+}
+
 export function VersionHistory({ versions }: VersionHistoryProps) {
   const [selectedSnapshot, setSelectedSnapshot] = useState<{
     versionNumber: number;
-    report: WeeklyReport;
+    report: SnapshotReport;
   } | null>(null);
 
   if (!versions || versions.length === 0) {
@@ -35,6 +95,14 @@ export function VersionHistory({ versions }: VersionHistoryProps) {
       </Card>
     );
   }
+
+  const sortedVersions = [...versions].sort(
+    (a, b) => b.versionNumber - a.versionNumber,
+  );
+
+  const latestVersionNumber = Math.max(
+    ...versions.map((version) => version.versionNumber),
+  );
 
   return (
     <>
@@ -50,8 +118,8 @@ export function VersionHistory({ versions }: VersionHistoryProps) {
               variant="outline"
               className="border-[#E5E7E5] bg-[#F7F8F7] text-xs font-medium text-[#6B726D]"
             >
-              {versions.length} {versions.length === 1 ? "Version" : "Versions"}{" "}
-              Tracked
+              {versions.length}{" "}
+              {versions.length === 1 ? "Version" : "Versions"} Tracked
             </Badge>
           </div>
         </CardHeader>
@@ -60,16 +128,29 @@ export function VersionHistory({ versions }: VersionHistoryProps) {
 
         <CardContent className="pt-5">
           <div className="relative space-y-6 pl-6 before:absolute before:bottom-2 before:left-2.5 before:top-2 before:w-0.5 before:bg-[#E5E7E5]">
-            {versions.map((ver, idx) => {
-              let parsedReport: WeeklyReport | null = null;
+            {sortedVersions.map((ver) => {
+              let parsedReport: SnapshotReport | null = null;
 
               try {
-                parsedReport = JSON.parse(ver.contentSnapshot) as WeeklyReport;
+                const snapshot = JSON.parse(ver.contentSnapshot) as WeeklyReport & {
+                  status?: unknown;
+                  submittedAt?: unknown;
+                  approvedAt?: unknown;
+                };
+
+                const { status: _status, ...reportWithoutStatus } = snapshot;
+
+                parsedReport = normalizeSnapshotDates({
+                  ...reportWithoutStatus,
+                  submittedAt: normalizeDateTime(snapshot.submittedAt),
+                  approvedAt: normalizeDateTime(snapshot.approvedAt),
+                } as SnapshotReport);
               } catch {
                 parsedReport = null;
               }
 
-              const isLatest = idx === versions.length - 1;
+              const isLatest =
+                ver.versionNumber === latestVersionNumber;
 
               return (
                 <div key={ver.id} className="group relative">
@@ -100,7 +181,10 @@ export function VersionHistory({ versions }: VersionHistoryProps) {
                         </div>
 
                         <span className="text-xs text-[#6B726D]">
-                          Submitted {formatDateTime(ver.createdAt)}
+                          Submitted{" "}
+                          {formatDateTime(
+                            normalizeDateTime(ver.createdAt),
+                          )}
                         </span>
                       </div>
 
@@ -173,27 +257,26 @@ export function VersionHistory({ versions }: VersionHistoryProps) {
         }}
       >
         <DialogContent className="max-h-[90vh] min-w-[80vw] overflow-hidden border-[#E5E7E5] bg-white p-3">
-          <div className="max-h-[calc(90vh-1.5rem)] overflow-y-auto">
-            <div className="pt-6">
+          <div className="flex max-h-[calc(90vh-1.5rem)] flex-col">
+            <div className="shrink-0 pt-6">
               <DialogHeader className="border-b border-[#E5E7E5] px-6 py-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <DialogTitle className="text-lg font-bold text-[#171A18]">
-                      Version {selectedSnapshot?.versionNumber} Snapshot
-                    </DialogTitle>
-                    <DialogDescription className="mt-1 text-xs text-[#6B726D]">
-                      Read-only view of historical report data
-                    </DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
+                <DialogTitle className="text-lg font-bold text-[#171A18]">
+                  Version {selectedSnapshot?.versionNumber} Snapshot
+                </DialogTitle>
 
-              {selectedSnapshot && (
-                <div className="px-6 pb-6 pt-5">
-                  <ReportSummary report={selectedSnapshot.report} />
-                </div>
-              )}
+                <DialogDescription className="mt-1 text-xs text-[#6B726D]">
+                  Read-only view of historical report data
+                </DialogDescription>
+              </DialogHeader>
             </div>
+
+            {selectedSnapshot && (
+              <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-5">
+                <ReportSummary
+                  report={selectedSnapshot.report as WeeklyReport}
+                />
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

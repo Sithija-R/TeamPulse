@@ -1,17 +1,46 @@
-import React from 'react';
-import { useDashboard } from '../../hooks/useDashboard';
-import { PageHeader } from '../../components/common/PageHeader';
-import { DashboardMetrics } from '../../components/dashboard/DashboardMetrics';
-import { StatusOverview } from '../../components/dashboard/StatusOverview';
-import { MemberStatusChart } from '../../components/dashboard/MemberStatusChart';
-import { ProjectDistributionChart } from '../../components/dashboard/ProjectDistributionChart';
-import { TimeDistributionChart } from '../../components/dashboard/TimeDistributionChart';
-import { RecentActivity } from '../../components/dashboard/RecentActivity';
-import { CURRENT_WEEK } from '../../lib/constants';
+import { useEffect } from "react";
+import { PageHeader } from "../../components/common/PageHeader";
+import { DashboardMetrics } from "../../components/dashboard/DashboardMetrics";
+import { StatusOverview } from "../../components/dashboard/StatusOverview";
+import { MemberStatusChart } from "../../components/dashboard/MemberStatusChart";
+import { ProjectDistributionChart } from "../../components/dashboard/ProjectDistributionChart";
+import { TimeDistributionChart } from "../../components/dashboard/TimeDistributionChart";
+import { RecentActivity } from "../../components/dashboard/RecentActivity";
+import { CURRENT_WEEK } from "../../lib/constants";
+import { useDashboardStore } from "../../store/dashboardStore";
 
-export const ManagementDashboard: React.FC = () => {
-  const { metrics, memberStatuses, projectDistribution, timeDistribution, recentActivity } =
-    useDashboard();
+export function ManagementDashboard() {
+  const { dashboard, isLoading, error, fetchDashboard } = useDashboardStore();
+  console.log("Dashboard data:", dashboard);
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
+
+  if (isLoading && !dashboard) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Management Executive Dashboard"
+          description={`Team overview, reporting compliance, and sprint pulse for ${CURRENT_WEEK.label}`}
+        />
+        <div className="text-sm text-[#6B726D]">Loading dashboard...</div>
+      </div>
+    );
+  }
+
+  if (error || !dashboard) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Management Executive Dashboard"
+          description={`Team overview, reporting compliance, and sprint pulse for ${CURRENT_WEEK.label}`}
+        />
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {error || "Dashboard data is unavailable."}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -20,23 +49,18 @@ export const ManagementDashboard: React.FC = () => {
         description={`Team overview, reporting compliance, and sprint pulse for ${CURRENT_WEEK.label}`}
       />
 
-      {/* Top Key Metrics Row */}
-      <DashboardMetrics metrics={metrics} isManager={true} />
+      <DashboardMetrics metrics={dashboard} />
 
-      {/* Status Breakdown Bar */}
-      <StatusOverview metrics={metrics} />
+      <StatusOverview metrics={dashboard} />
 
-      {/* Member Submission Status Table */}
-      <MemberStatusChart statuses={memberStatuses} />
+      <MemberStatusChart statuses={dashboard.statusByMember} />
 
-      {/* Two Column Grid for Charts */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ProjectDistributionChart projects={projectDistribution} />
-        <TimeDistributionChart distribution={timeDistribution} />
+        <ProjectDistributionChart projects={dashboard.reportsByProject} />
+        <TimeDistributionChart distribution={dashboard.timeByTaskType} />
       </div>
 
-      {/* Recent Activity Feed */}
-      <RecentActivity activities={recentActivity} />
+      <RecentActivity activities={dashboard.recentActivity} />
     </div>
   );
-};
+}

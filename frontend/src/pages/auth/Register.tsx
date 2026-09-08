@@ -82,8 +82,8 @@ export const Register = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F7F8F7] p-4">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-transparent p-4">
+      <div className="w-full min-w-md">
         <div className="rounded-2xl border border-[#E5E7E5] bg-white p-8 shadow-xl">
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8DF688] text-[#171A18]">

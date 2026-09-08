@@ -1,53 +1,68 @@
-import React from 'react';
-import { ProjectDistribution } from '../../types/dashboard';
-import { Briefcase, Clock, Users } from 'lucide-react';
+import { Briefcase, FileText } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ProjectDistributionChartProps {
-  projects: ProjectDistribution[];
+  projects: Record<string, number>;
 }
 
-export const ProjectDistributionChart: React.FC<ProjectDistributionChartProps> = ({ projects }) => {
-  const maxHours = Math.max(...projects.map((p) => p.totalHours), 1);
+export function ProjectDistributionChart({ projects }: ProjectDistributionChartProps) {
+  const projectEntries = Object.entries(projects);
+  const maxReports = Math.max(...projectEntries.map(([, count]) => count), 1);
 
   return (
-    <div className="rounded-xl border border-[#E5E7E5] bg-white p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-sm font-bold text-[#171A18]">Project Workload Distribution</h3>
-          <p className="text-xs text-[#6B726D]">Logged hours & reports per active project</p>
+    <Card className="border-[#E5E7E5] bg-white shadow-sm">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <CardTitle className="text-sm font-bold text-[#171A18]">
+              Project Distribution
+            </CardTitle>
+            <p className="mt-1 text-xs text-[#6B726D]">
+              Reports submitted across active projects
+            </p>
+          </div>
+          <Briefcase className="h-4 w-4 text-[#6B726D]" />
         </div>
-        <Briefcase className="h-4 w-4 text-[#6B726D]" />
-      </div>
+      </CardHeader>
 
-      <div className="space-y-4">
-        {projects.map((project) => {
-          const percent = Math.round((project.totalHours / maxHours) * 100);
+      <CardContent>
+        {projectEntries.length === 0 ? (
+          <div className="py-8 text-center text-xs text-[#6B726D]">
+            No project data available.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {projectEntries.map(([projectName, reportCount]) => {
+              const percent = Math.round((reportCount / maxReports) * 100);
 
-          return (
-            <div key={project.projectId} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-[#171A18]">{project.projectName}</span>
-                <div className="flex items-center gap-3 text-[#6B726D]">
-                  <span className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    {project.memberCount} members
-                  </span>
-                  <span className="flex items-center gap-1 font-medium text-[#171A18]">
-                    <Clock className="h-3 w-3" />
-                    {project.totalHours} hrs
-                  </span>
+              return (
+                <div key={projectName} className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-3 text-xs">
+                    <span className="font-semibold text-[#171A18]">
+                      {projectName}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="border-[#E5E7E5] bg-[#F7F8F7] text-[10px] font-semibold text-[#6B726D]"
+                    >
+                      <FileText className="mr-1 h-3 w-3" />
+                      {reportCount} {reportCount === 1 ? "report" : "reports"}
+                    </Badge>
+                  </div>
+
+                  <div className="h-2.5 w-full overflow-hidden rounded-full border border-[#E5E7E5] bg-[#F7F8F7]">
+                    <div
+                      style={{ width: `${percent}%` }}
+                      className="h-full bg-[#8DF688] transition-all duration-300"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#F7F8F7] border border-[#E5E7E5]">
-                <div
-                  style={{ width: `${percent}%` }}
-                  className="h-full bg-[#8DF688] transition-all duration-300"
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+              );
+            })}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
-};
+}

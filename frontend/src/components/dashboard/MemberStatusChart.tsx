@@ -1,85 +1,129 @@
-import React from 'react';
-import { MemberSubmissionStatus } from '../../types/dashboard';
-import { StatusBadge } from '../common/StatusBadge';
-import { Link } from 'react-router-dom';
-import { ExternalLink, AlertTriangle } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { AlertTriangle, ExternalLink } from "lucide-react";
+
+import { MemberStatus } from "../../types/dashboard";
+import { StatusBadge } from "../common/StatusBadge";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface MemberStatusChartProps {
-  statuses: MemberSubmissionStatus[];
+  statuses: MemberStatus[];
 }
 
 export const MemberStatusChart: React.FC<MemberStatusChartProps> = ({ statuses }) => {
   return (
-    <div className="rounded-xl border border-[#E5E7E5] bg-white p-5">
-      <div className="flex items-center justify-between mb-4">
+    <Card className="border border-[#E5E7E5] bg-white shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-4">
         <div>
-          <h3 className="text-sm font-bold text-[#171A18]">Team Submission Status</h3>
-          <p className="text-xs text-[#6B726D]">Real-time reporting status per team member</p>
+          <CardTitle className="text-sm font-bold text-[#171A18]">
+            Team Submission Status
+          </CardTitle>
+          <p className="mt-1 text-xs text-[#6B726D]">
+            Real-time reporting status per team member
+          </p>
         </div>
+
         <Link
           to="/management/reports"
-          className="text-xs font-semibold text-[#171A18] hover:underline flex items-center gap-1"
+          className="flex items-center gap-1 text-xs font-semibold text-[#171A18] hover:underline"
         >
-          View All Reports <ExternalLink className="h-3 w-3" />
+          View All Reports
+          <ExternalLink className="h-3 w-3" />
         </Link>
-      </div>
+      </CardHeader>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs">
-          <thead>
-            <tr className="border-b border-[#E5E7E5] bg-[#F7F8F7] text-[#6B726D]">
-              <th className="py-2.5 px-3 font-semibold">Team Member</th>
-              <th className="py-2.5 px-3 font-semibold">Project</th>
-              <th className="py-2.5 px-3 font-semibold">Status</th>
-              <th className="py-2.5 px-3 font-semibold">Blockers</th>
-              <th className="py-2.5 px-3 text-right font-semibold">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#E5E7E5]">
-            {statuses.map((member) => (
-              <tr key={member.userId} className="hover:bg-[#F7F8F7]/50 transition-colors">
-                <td className="py-3 px-3">
-                  <Link
-                    to={`/management/team/${member.userId}`}
-                    className="font-medium text-[#171A18] hover:underline block"
-                  >
-                    {member.userName}
-                  </Link>
-                  <span className="text-[11px] text-[#9AA19C]">{member.email}</span>
-                </td>
-                <td className="py-3 px-3 text-[#6B726D] font-medium">
-                  {member.projectName}
-                </td>
-                <td className="py-3 px-3">
-                  <StatusBadge status={member.status} type="report" size="sm" />
-                </td>
-                <td className="py-3 px-3">
-                  {member.blockersCount > 0 ? (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                      <AlertTriangle className="h-3 w-3" />
-                      {member.blockersCount} open
-                    </span>
-                  ) : (
-                    <span className="text-[#9AA19C]">&mdash;</span>
-                  )}
-                </td>
-                <td className="py-3 px-3 text-right">
-                  {member.reportId ? (
+      <CardContent className="px-5 pb-5">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-[#E5E7E5] bg-[#F7F8F7] hover:bg-[#F7F8F7]">
+                <TableHead className="font-semibold text-[#6B726D]">
+                  Team Member
+                </TableHead>
+                <TableHead className="font-semibold text-[#6B726D]">
+                  Project
+                </TableHead>
+                <TableHead className="font-semibold text-[#6B726D]">
+                  Status
+                </TableHead>
+                <TableHead className="font-semibold text-[#6B726D]">
+                  Tasks
+                </TableHead>
+                <TableHead className="font-semibold text-[#6B726D]">
+                  Blockers
+                </TableHead>
+                <TableHead className="text-right font-semibold text-[#6B726D]">
+                  Reports
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {statuses.map((member) => (
+                <TableRow
+                  key={member.memberId}
+                  className="border-[#E5E7E5] hover:bg-[#F7F8F7]/50"
+                >
+                  <TableCell>
                     <Link
-                      to={`/management/reports/${member.reportId}`}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#171A18] hover:text-[#171A18]/80 bg-[#F7F8F7] hover:bg-[#8DF688]/30 px-2.5 py-1 rounded-md border border-[#E5E7E5] transition-colors"
+                      to={`/management/team/${member.memberId}`}
+                      className="font-medium text-[#171A18] hover:underline"
                     >
-                      {member.status === 'SUBMITTED' ? 'Review' : 'View'}
+                      {member.memberName}
                     </Link>
-                  ) : (
-                    <span className="text-[11px] text-[#9AA19C] italic">Pending</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                  </TableCell>
+
+                  <TableCell className="font-medium text-[#6B726D]">
+                    {member.projectName || "—"}
+                  </TableCell>
+
+                  <TableCell>
+                    <StatusBadge
+                      status={member.status}
+                      type="report"
+                      size="sm"
+                    />
+                  </TableCell>
+
+                  <TableCell>
+                    <span className="font-medium text-[#171A18]">
+                      {member.completedTasks}
+                    </span>
+                    <span className="text-[#9AA19C]">
+                      {" "}
+                      / {member.totalTasks}
+                    </span>
+                  </TableCell>
+
+                  <TableCell>
+                    {member.openBlockers > 0 ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                        <AlertTriangle className="h-3 w-3" />
+                        {member.openBlockers} open
+                      </span>
+                    ) : (
+                      <span className="text-[#9AA19C]">—</span>
+                    )}
+                  </TableCell>
+
+                  <TableCell className="text-right font-medium text-[#171A18]">
+                    {member.reportCount}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

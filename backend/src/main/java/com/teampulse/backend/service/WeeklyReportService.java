@@ -27,9 +27,7 @@ import com.teampulse.backend.model.WeeklyReport;
 import com.teampulse.backend.model.enums.ReportStatus;
 import com.teampulse.backend.repository.ProjectRepository;
 import com.teampulse.backend.repository.ReportVersionRepository;
-import com.teampulse.backend.repository.UserRepository;
 import com.teampulse.backend.repository.WeeklyReportRepository;
-
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,14 +44,14 @@ import java.util.List;
 public class WeeklyReportService {
 
         private final WeeklyReportRepository reportRepository;
-        private final UserRepository userRepository;
+        private final UserService userService;
         private final ProjectRepository projectRepository;
         private final ReportVersionRepository reportVersionRepository;
         private final ObjectMapper objectMapper;
 
         public WeeklyReportResponse createReport(WeeklyReportRequest request, String email) {
 
-                User user = getUserByEmail(email);
+                User user = userService.getUserByEmail(email);
 
                 if (reportRepository.existsByUserIdAndWeekStartDate(user.getId(), request.weekStartDate())) {
 
@@ -147,7 +145,7 @@ public class WeeklyReportService {
 
         public List<WeeklyReportResponse> getMyReports(String email) {
 
-                User user = getUserByEmail(email);
+                User user = userService.getUserByEmail(email);
 
                 return reportRepository.findByUserId(user.getId())
                                 .stream()
@@ -157,7 +155,7 @@ public class WeeklyReportService {
 
         public WeeklyReportResponse getMyReport(Long id, String email) {
 
-                User user = getUserByEmail(email);
+                User user = userService.getUserByEmail(email);
 
                 WeeklyReport report = reportRepository.findByIdAndUserId(id, user.getId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Report not found"));
@@ -167,7 +165,7 @@ public class WeeklyReportService {
 
         public WeeklyReportResponse updateReport(Long id, WeeklyReportRequest request, String email) {
 
-                User user = getUserByEmail(email);
+                User user = userService.getUserByEmail(email);
 
                 WeeklyReport report = reportRepository.findByIdAndUserId(id, user.getId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Report not found"));
@@ -261,9 +259,15 @@ public class WeeklyReportService {
                 return toResponse(updatedReport);
         }
 
+        public WeeklyReportResponse getReportById(Long id) {
+                return reportRepository.findById(id)
+                                .map(this::toResponse)
+                                .orElseThrow(() -> new ResourceNotFoundException("Report not found"));
+        }
+
         public void deleteReport(Long id, String email) {
 
-                User user = getUserByEmail(email);
+                User user = userService.getUserByEmail(email);
 
                 WeeklyReport report = reportRepository.findByIdAndUserId(id, user.getId())
                                 .orElseThrow(() -> new RuntimeException("Report not found"));
@@ -277,7 +281,7 @@ public class WeeklyReportService {
 
         @Transactional
         public WeeklyReportResponse submitReport(Long id, String email) {
-                User user = getUserByEmail(email);
+                User user = userService.getUserByEmail(email);
 
                 WeeklyReport report = reportRepository.findByIdAndUserId(id, user.getId())
                                 .orElseThrow(() -> new ResourceNotFoundException("Report not found"));
@@ -319,16 +323,13 @@ public class WeeklyReportService {
                 }
         }
 
-        private User getUserByEmail(String email) {
-
-                return userRepository.findByEmail(email)
-                                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        }
-
         @Transactional(readOnly = true)
         public List<WeeklyReportResponse> getFilteredReports(Long memberId, Long projectId, ReportStatus status,
                         LocalDate startDate, LocalDate endDate) {
-                                Specification<WeeklyReport> specification = Specification.unrestricted();
+
+                
+                Specification<WeeklyReport> specification = Specification
+                                .where((root, query, cb) -> cb.notEqual(root.get("status"), ReportStatus.DRAFT));
 
                 if (memberId != null) {
                         specification = specification

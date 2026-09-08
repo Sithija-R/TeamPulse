@@ -39,6 +39,14 @@ public class WeeklyReportController {
         return ResponseEntity.ok(reportService.getMyReport(id, authentication.getName()));
     }
 
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<WeeklyReportResponse> getById(@PathVariable Long id, Authentication authentication) {
+        System.out.println("User: " + authentication.getName());
+        System.out.println("Authorities: " + authentication.getAuthorities());
+    
+        return ResponseEntity.ok(reportService.getReportById(id));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<WeeklyReportResponse> updateReport(@PathVariable Long id,
             @Valid @RequestBody WeeklyReportRequest request, Authentication authentication) {

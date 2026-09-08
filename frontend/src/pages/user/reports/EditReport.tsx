@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useReportStore } from "../../../store/reportStore";
 import { useReviewStore } from "../../../store/reviewStore";
 import type { WeeklyReportRequest } from "../../../types/report";
+import { toast } from "@/components/ui/toast";
 
 export function EditReport() {
   const { id } = useParams<{ id: string }>();
@@ -65,24 +66,42 @@ export function EditReport() {
   const report = selectedReport;
   const latestReview = reviews[0];
 
-  const handleSubmit = async (
-    reportPayload: WeeklyReportRequest,
-    isSubmit: boolean
-  ) => {
+  const handleSubmit = async (reportPayload: WeeklyReportRequest, isSubmit: boolean) => {
     if (isSaving) return;
-
+  
     setIsSaving(true);
-
+  
     try {
       const updatedReport = await updateReport(reportId, reportPayload);
-
+  
       if (isSubmit) {
         await submitReport(updatedReport.id);
+  
+        toast.add({
+          title: "Report Resubmitted",
+          description: "Your report has been updated and resubmitted successfully.",
+          type: "success",
+        });
+      } else {
+        toast.add({
+          title: "Report Updated",
+          description: "Your report has been updated successfully.",
+          type: "success",
+        });
       }
-
+  
       navigate("/user/reports");
     } catch (error) {
       console.error("Failed to update report:", error);
+  
+      toast.add({
+        title: isSubmit ? "Resubmission Failed" : "Update Failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+        type: "error",
+      });
     } finally {
       setIsSaving(false);
     }

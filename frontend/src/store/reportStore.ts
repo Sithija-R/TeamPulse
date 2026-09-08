@@ -13,6 +13,7 @@ interface ReportState {
   fetchMyReports: () => Promise<void>;
   fetchMyReport: (id: number) => Promise<void>;
   fetchAllReports: (filters?: ReportFilters) => Promise<void>;
+  fetchReportById: (id: number) => Promise<void>;
   createReport: (data: Parameters<typeof reportService.createReport>[0]) => Promise<WeeklyReport>;
   updateReport: (id: number, data: Parameters<typeof reportService.updateReport>[1]) => Promise<WeeklyReport>;
   deleteReport: (id: number) => Promise<void>;
@@ -66,6 +67,19 @@ export const useReportStore = create<ReportState>((set) => ({
     }
   },
 
+  fetchReportById: async (id) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const selectedReport = await reportService.getReportById(id);
+      set({ selectedReport, isLoading: false });
+    } catch (error: any) {
+      const message = error.response?.data?.message || "Failed to load report.";
+      set({ isLoading: false, error: message });
+      throw new Error(message);
+    }
+  },
+  
   createReport: async (data) => {
     set({ isLoading: true, error: null });
 

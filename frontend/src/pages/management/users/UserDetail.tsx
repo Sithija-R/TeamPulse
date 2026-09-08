@@ -1,6 +1,5 @@
-import React from 'react';
-import { MemberProfile } from '../team/MemberProfile';
+import { MemberProfile } from "../team/MemberProfile";
 
-export const UserDetail: React.FC = () => {
+export function UserDetail() {
   return <MemberProfile />;
-};
+}

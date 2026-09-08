@@ -4,5 +4,10 @@ public record MemberStatusResponse(
         Long memberId,
         String memberName,
         String status,
-        long reportCount
-) {}
+        long reportCount,
+        String projectName,
+        int totalTasks,
+        int completedTasks,
+        int openBlockers
+) {
+}
