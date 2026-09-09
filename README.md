@@ -33,11 +33,9 @@ A full-stack Weekly Report Generator and Team Dashboard for managing weekly empl
 ![TeamPulse Login](frontend/public/teampulse_login.jpg)
 
 ### Admin Dashboard
-
 ![TeamPulse Dashboard](frontend/public/teampulse_admin_dashboard.jpg)
 
 ### Team Member Dashboard
-
 ![TeamPulse Weekly Report](frontend/public/teampulse_member_dashboard.jpg)
 
 ---
